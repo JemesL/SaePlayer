@@ -33,8 +33,8 @@ extension SaeSlide {
         value        = 0.0
         maximumTrackTintColor = UIColor.white.withAlphaComponent(0.2)
         minimumTrackTintColor = UIColor.white.withAlphaComponent(0.7)
-        setThumbImage(UIImage.imageResourcePath("progress_point_hightlight"), for: .highlighted)
-        setThumbImage(UIImage.imageResourcePath("progress_point_normal"), for: .normal)
+        setThumbImage(imageResourcePath("progress_point_hightlight"), for: .highlighted)
+        setThumbImage(imageResourcePath("progress_point_normal"), for: .normal)
     }
 }
 

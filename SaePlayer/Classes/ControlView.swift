@@ -222,7 +222,7 @@ extension ControlView: PlayControlProtocol {
         }
         UIView.animate(withDuration: 0.25, animations: { [weak self] in
             self?.cover.alpha = 0
-        }) { [weak self] isEnd in
+        }) { isEnd in
         }
     }
 
@@ -303,8 +303,8 @@ extension ControlView {
         time.text = "00:00|00:00"
         
         playBtn = UIButton(type: .custom)
-        playBtn.setImage(UIImage.imageResourcePath("player_play"), for: .normal)
-        playBtn.setImage(UIImage.imageResourcePath("player_pause"), for: .selected)
+        playBtn.setImage(imageResourcePath("player_play"), for: .normal)
+        playBtn.setImage(imageResourcePath("player_pause"), for: .selected)
         playBtn.addTarget(self, action: #selector(switchPlayerStatus), for: .touchUpInside)
         playBtn.clickEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
@@ -330,4 +330,9 @@ extension ControlView {
         progressTime.consHeight(2)
         progressWidthCons = progressTime.getConsWidth(0, toItem: nil, destAttri: .width, dividedBy: 100, relatedBy: .equal)
     }
+}
+
+func imageResourcePath(_ fileName: String) -> UIImage? {
+    let bundle = Bundle(for: SaePlayer.self)
+    return UIImage(named: fileName, in: bundle, compatibleWith: nil)
 }
