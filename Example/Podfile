@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'SaePlayer_Example' do
+  pod 'SaePlayer', :path => '../'
+
+  target 'SaePlayer_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
