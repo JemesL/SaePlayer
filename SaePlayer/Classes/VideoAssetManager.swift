@@ -11,7 +11,7 @@ import AVKit
 open class VideoAssetManager {
     static let shared: VideoAssetManager = VideoAssetManager()
     
-    fileprivate var list: [String: AVURLAsset] = [:]
+    var list: [String: AVURLAsset] = [:]
     
     func getAsset(with url: URL) -> AVURLAsset {
         if let asset: AVURLAsset = list.get(url.absoluteString) {
@@ -24,6 +24,7 @@ open class VideoAssetManager {
     }
     
     func remove(url: URL) {
+        print("Asset remove: \(url)")
         list.removeValue(forKey: url.absoluteString)
     }
 }

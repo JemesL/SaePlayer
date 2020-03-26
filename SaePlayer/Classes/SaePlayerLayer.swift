@@ -23,10 +23,10 @@ public protocol SaePlayerLayerProtocol: class {
 open class SaePlayerLayer: UIView {
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
     
-    var player: AVPlayer!
+    var player: AVPlayer? = nil
     var playerItem: AVPlayerItem? = nil
     var playerLayer: AVPlayerLayer? = nil
-    
+    fileprivate var periodicTimeObserver: Any? = nil
     fileprivate var needChangeItem: Bool = false
     
     // 封面
@@ -34,6 +34,8 @@ open class SaePlayerLayer: UIView {
     var url: String? = nil
     
     weak var delegate: PlayControlProtocol? = nil
+    
+    
     
     // 播放状态
     fileprivate var status: PlayStatus = .none {
@@ -60,15 +62,27 @@ open class SaePlayerLayer: UIView {
     }
     
     deinit {
-        self.player.replaceCurrentItem(with: nil)
-        self.playerItem = nil
-        if let urlStr = url, let url = URL(string: urlStr) {
-            VideoAssetManager.shared.remove(url: url)
-        }
+        clean()
     }
 }
 
 extension SaePlayerLayer {
+    
+    func clean() {
+        self.player?.pause()
+        if let ob = periodicTimeObserver {
+            self.player?.removeTimeObserver(ob)
+        }
+        self.player?.currentItem?.cancelPendingSeeks()
+        self.player?.currentItem?.asset.cancelLoading()
+        self.player?.replaceCurrentItem(with: nil)
+        self.playerItem = nil
+        if let urlStr = url, let url = URL(string: urlStr) {
+            VideoAssetManager.shared.remove(url: url)
+        }
+        self.player = nil
+    }
+    
     func setData(url: String, cover: String) {
         if url != self.url {
             needChangeItem = true
@@ -78,28 +92,32 @@ extension SaePlayerLayer {
     
     func initAndPlay() {
         if !needChangeItem {
-            self.player.play()
+            self.player?.play()
             return
         }
         guard let urlStr = url, let url = URL(string: urlStr) else { return }
 //        let asset = AVURLAsset(url: url)
-        
+        self.player?.currentItem?.cancelPendingSeeks()
+        self.player?.currentItem?.asset.cancelLoading()
+//        if let ob = periodicTimeObserver {
+//            self.player?.removeTimeObserver(ob)
+//        }
         self.playerItem = AVPlayerItem(asset: VideoAssetManager.shared.getAsset(with: url))
         
-        self.player.replaceCurrentItem(with: playerItem)
+        self.player?.replaceCurrentItem(with: playerItem)
         if let totalTime = self.playerItem?.duration {
             delegate?.setTotalTime(TimeInterval(totalTime.value))
         }
         if let curTime = self.playerItem?.currentTime() {
             delegate?.setCurrentTime(TimeInterval(curTime.value))
-            self.player.seek(to: curTime)
+            self.player?.seek(to: curTime)
         }
         
         needChangeItem = false
         self.playerItem?.sae.observe(\AVPlayerItem.status, options: .new) { [weak self] (item, change) in
             switch item.status {
             case .readyToPlay:
-                self?.player.play()
+                self?.player?.play()
                 break
             case .unknown:
                 break
@@ -163,7 +181,7 @@ extension SaePlayerLayer {
                     self.bufferingSomeSecond()
                 } else {
                     if self.status == .buffering {
-                        self.player.play()
+                        self.player?.play()
                     }
                 }
             }
@@ -177,7 +195,7 @@ extension SaePlayerLayer {
         backgroundColor = .white
         
         self.player = AVPlayer()
-        self.player.rate = 1.0
+        self.player?.rate = 1.0
         
         self.cover = UIImageView()
         self.cover.contentMode = .scaleAspectFill
@@ -192,7 +210,7 @@ extension SaePlayerLayer {
     }
     
     func setupActions() {
-        self.player.sae.observe(\AVPlayer.timeControlStatus, options: .new) { [weak self] (player, change) in
+        self.player?.sae.observe(\AVPlayer.timeControlStatus, options: .new) { [weak self] (player, change) in
             //            guard self?.url == "https://qnimage.bamaying.com/2fe55de6ac84762ba75be4cb9dec17ae.mp4" else { return }
             switch player.timeControlStatus {
             case .paused:
@@ -212,14 +230,15 @@ extension SaePlayerLayer {
                 break
             }
         }
-        self.player.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 60), queue: DispatchQueue.main) { [weak self](time) in
+        self.player?.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 60), queue: DispatchQueue.main) { [weak self](time) in
+            guard let duration = self?.player?.currentItem?.duration else { return }
             //当前正在播放的时间
             let loadTime = CMTimeGetSeconds(time)
             //视频总时间
-            let totalTime = CMTimeGetSeconds((self?.player.currentItem?.duration)!)
+            let totalTime = CMTimeGetSeconds(duration)
             if loadTime == totalTime {
-                self?.player.seek(to: CMTime.zero, completionHandler: { (com) in
-                    self?.player.play()
+                self?.player?.seek(to: CMTime.zero, completionHandler: { (com) in
+                    self?.player?.play()
                 })
             }
             self?.delegate?.setTotalTime(totalTime)
@@ -234,7 +253,7 @@ extension SaePlayerLayer: SaePlayerLayerProtocol {
     public func pause() {
         // 外部暂停, 等于用户主动暂停
         isWaitingBuffered = false
-        player.pause()
+        player?.pause()
     }
     
     public func play() {
@@ -244,7 +263,7 @@ extension SaePlayerLayer: SaePlayerLayerProtocol {
     public func seekTo(_ time: TimeInterval) {
         let player = self.player
         player?.seek(to: CMTime(seconds: time, preferredTimescale: 1000)) { [weak self] (isCom) in
-            self?.player.play()
+            self?.player?.play()
         }
     }
 }

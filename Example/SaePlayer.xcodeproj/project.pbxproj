@@ -15,6 +15,7 @@
 		607FACEC1AFB9204008FA782 /* Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 607FACEB1AFB9204008FA782 /* Tests.swift */; };
 		65282DAF86A9B29C1E7DE8A6 /* Pods_SaePlayer_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA2E43441E0A4BEAAE8786BD /* Pods_SaePlayer_Example.framework */; };
 		79825B9314832DB1AA1F6BC3 /* Pods_SaePlayer_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA8552F4095D500D827C0BF1 /* Pods_SaePlayer_Tests.framework */; };
+		8C53964D242D075200C9C535 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C53964C242D075200C9C535 /* TestViewController.swift */; };
 		8C558A52242C92880079067A /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C558A51242C92880079067A /* VideoCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +44,7 @@
 		6F80EB4187257E1FEE63661E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		77FEBCB9E4B9481F8F37CF68 /* Pods-SaePlayer_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaePlayer_Tests.release.xcconfig"; path = "Target Support Files/Pods-SaePlayer_Tests/Pods-SaePlayer_Tests.release.xcconfig"; sourceTree = "<group>"; };
 		879DBF071BD5F48945F21994 /* Pods-SaePlayer_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaePlayer_Example.debug.xcconfig"; path = "Target Support Files/Pods-SaePlayer_Example/Pods-SaePlayer_Example.debug.xcconfig"; sourceTree = "<group>"; };
+		8C53964C242D075200C9C535 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		8C558A51242C92880079067A /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
 		A7D5D364C688391AE1879080 /* Pods-SaePlayer_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaePlayer_Example.release.xcconfig"; path = "Target Support Files/Pods-SaePlayer_Example/Pods-SaePlayer_Example.release.xcconfig"; sourceTree = "<group>"; };
 		AA8552F4095D500D827C0BF1 /* Pods_SaePlayer_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SaePlayer_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -106,6 +108,7 @@
 			children = (
 				607FACD51AFB9204008FA782 /* AppDelegate.swift */,
 				607FACD71AFB9204008FA782 /* ViewController.swift */,
+				8C53964C242D075200C9C535 /* TestViewController.swift */,
 				8C558A51242C92880079067A /* VideoCell.swift */,
 				607FACD91AFB9204008FA782 /* Main.storyboard */,
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
@@ -342,6 +345,7 @@
 			files = (
 				607FACD81AFB9204008FA782 /* ViewController.swift in Sources */,
 				607FACD61AFB9204008FA782 /* AppDelegate.swift in Sources */,
+				8C53964D242D075200C9C535 /* TestViewController.swift in Sources */,
 				8C558A52242C92880079067A /* VideoCell.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
