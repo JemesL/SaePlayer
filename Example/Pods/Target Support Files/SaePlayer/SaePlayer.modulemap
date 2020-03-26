@@ -1,0 +1,6 @@
+framework module SaePlayer {
+  umbrella header "SaePlayer-umbrella.h"
+
+  export *
+  module * { export * }
+}

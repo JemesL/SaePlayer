@@ -1,0 +1,6 @@
+framework module SaeKit {
+  umbrella header "SaeKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
