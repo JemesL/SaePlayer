@@ -1,33 +1,26 @@
-
 //
-//  TestViewController.swift
+//  NaviTest2CTrl.swift
 //  SaePlayer_Example
 //
-//  Created by Jemesl on 2020/3/26.
+//  Created by Jemesl on 2020/3/30.
 //  Copyright © 2020 CocoaPods. All rights reserved.
 //
 
 import Foundation
-import Foundation
 import UIKit
 
-class TestViewController: UIViewController {
+class NaviTest2CTrl: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        setupConstraints()
+//        setupConstraints()
+//        self.navigationController?.delegate = self
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: animated)
     }
-}
-
-extension TestViewController {
-    func setData() {
-    }
-    
     func setupViews() {
         view.backgroundColor = .white
         let btn = UIButton()
@@ -40,10 +33,6 @@ extension TestViewController {
     }
     
     @objc func pushTo() {
-        navigationController?.pushViewController(ViewController(), animated: true)
-    }
-    
-    func setupConstraints() {
+        navigationController?.pushViewController(TestViewController(), animated: true)
     }
 }
-
