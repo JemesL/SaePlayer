@@ -78,8 +78,8 @@
 		89A9375A72E68E2D7A0FEE9F09B9DB10 /* AuthenticationChallengeResponsable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1452882A3FE8E9E3C05C6C9A0BF05B2C /* AuthenticationChallengeResponsable.swift */; };
 		8A50CF3AAB5BD9BF949142DEB8E5050A /* ImageModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC9530282DDD5DB97D0323430C28838C /* ImageModifier.swift */; };
 		8B8BE709B46663F60DB6A661A3B2A28A /* ConstraintMakerPriortizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB16DBE517047E2326B74B6C0BF285B6 /* ConstraintMakerPriortizable.swift */; };
-		8C558A8F242CA7580079067A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C558A8E242CA7580079067A /* Assets.xcassets */; };
 		8C558A91242CAB940079067A /* UIImage+Ex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C558A90242CAB940079067A /* UIImage+Ex.swift */; };
+		8C865A6824359B1C00011978 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8C865A6724359B1B00011978 /* Assets.xcassets */; };
 		8EB401DC59ED357AFE37BAF90CD90B3A /* GIFAnimatedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 267818D17D6B5ABCB7B6503277FA3B71 /* GIFAnimatedImage.swift */; };
 		90AAB5BE2C1C3B9DD8E529AE520A3A04 /* KVOEnhance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72F2FADFED8F2CD4A2761349CF4D42C5 /* KVOEnhance.swift */; };
 		9432185152350A4A90F6DD19C33AC057 /* Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA0AFACB19802142C73EE963F6D6EEB9 /* Debugging.swift */; };
@@ -263,8 +263,8 @@
 		7E063136D9E4DCB810F20076951CF5F2 /* SaePlayer-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SaePlayer-dummy.m"; sourceTree = "<group>"; };
 		7E71E70CF21C5B66063FC599B4636622 /* Pods-SaePlayer_Tests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-SaePlayer_Tests-dummy.m"; sourceTree = "<group>"; };
 		8AF43403D8422D10DC8B8739116FE740 /* ConstraintAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintAttributes.swift; path = Source/ConstraintAttributes.swift; sourceTree = "<group>"; };
-		8C558A8E242CA7580079067A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8C558A90242CAB940079067A /* UIImage+Ex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Ex.swift"; sourceTree = "<group>"; };
+		8C865A6724359B1B00011978 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = SaePlayer/Assets/Assets.xcassets; sourceTree = "<group>"; };
 		8D655CA04AFEF93631BE610CA5A9A9D1 /* UIView+Ex.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UIView+Ex.swift"; path = "SaeKit/Classes/UIView+Ex.swift"; sourceTree = "<group>"; };
 		8DD5F4F6D9FC3765039F14049F6B890A /* Pods-SaePlayer_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SaePlayer_Tests-Info.plist"; sourceTree = "<group>"; };
 		8E829AD979187BC4A48E987039FDBCDC /* UIStreaming.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UIStreaming.swift; path = SaeKit/Classes/UIStreaming.swift; sourceTree = "<group>"; };
@@ -468,9 +468,9 @@
 				1450CE8580EE505A12F128E9FF9F3418 /* UITableView+Ex.swift */,
 				37714E919EA6438933A8A124F654F4D6 /* UIView+Ex.swift */,
 				9D6092E70C0838AB64316B0B2C363D2A /* VideoAssetManager.swift */,
+				8C865A6724359B1B00011978 /* Assets.xcassets */,
 				4C7261F67DB215E3377E5E79E5EBC316 /* Pod */,
 				8ACE4707F33AB622488EB4812E25FDA7 /* Support Files */,
-				8C558A8E242CA7580079067A /* Assets.xcassets */,
 			);
 			name = SaePlayer;
 			path = ../..;
@@ -942,7 +942,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8C558A8F242CA7580079067A /* Assets.xcassets in Resources */,
+				8C865A6824359B1C00011978 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

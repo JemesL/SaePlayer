@@ -33,7 +33,7 @@ TODO: Add long description of the pod here.
   s.source_files = 'SaePlayer/Classes/**/*'
   s.swift_version = '5.0'
   s.resource_bundles = {
-    'SaePlayer' => ['SaePlayer/Assets/*.*']
+    'SaePlayer' => ['SaePlayer/Assets/*.xcassets']
   }
 
   # s.public_header_files = 'Pod/Classes/**/*.h'

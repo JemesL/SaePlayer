@@ -336,6 +336,13 @@ extension ControlView {
 }
 
 func imageResourcePath(_ fileName: String) -> UIImage? {
-    let bundle = Bundle(for: SaePlayer.self)
-    return UIImage(named: fileName, in: bundle, compatibleWith: nil)
+    guard var bundleURL = Bundle(for: SaePlayer.self).resourceURL else { return  nil }
+//    return UIImage(named: fileName, in: bundle, compatibleWith: nil)
+    
+//    let frameworkBundle = NSBundle(forClass: XDWebViewController.self)
+    bundleURL.appendPathComponent("SaePlayer.bundle")
+    let resourceBundle = Bundle(url: bundleURL)
+//    let bundleURL = bundle.resourceURL?.URLByAppendingPathComponent("XDCoreLib.bundle")
+//    let resourceBundle = NSBundle(URL: bundleURL!)
+    return UIImage(named: fileName, in: resourceBundle, compatibleWith: nil)
 }
