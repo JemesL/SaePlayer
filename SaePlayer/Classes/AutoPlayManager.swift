@@ -9,7 +9,7 @@
 import Foundation
 import UIKit
 
-typealias AutoPlayCell = AutoPlayProtocol & UIView
+public typealias AutoPlayCell = AutoPlayProtocol & UIView
 
 public protocol AutoPlayProtocol {
     func getPlayerFrame() -> CGRect?

@@ -21,6 +21,7 @@
 		8C5396572431FADF00C9C535 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5396562431FADF00C9C535 /* BaseViewController.swift */; };
 		8C5396592431FCC000C9C535 /* NaviTest2CTrl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C5396582431FCC000C9C535 /* NaviTest2CTrl.swift */; };
 		8C558A52242C92880079067A /* VideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C558A51242C92880079067A /* VideoCell.swift */; };
+		8CD4B160244040CD0047144A /* SpaceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD4B15F244040CD0047144A /* SpaceTest.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -54,6 +55,7 @@
 		8C5396562431FADF00C9C535 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		8C5396582431FCC000C9C535 /* NaviTest2CTrl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NaviTest2CTrl.swift; sourceTree = "<group>"; };
 		8C558A51242C92880079067A /* VideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoCell.swift; sourceTree = "<group>"; };
+		8CD4B15F244040CD0047144A /* SpaceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceTest.swift; sourceTree = "<group>"; };
 		A7D5D364C688391AE1879080 /* Pods-SaePlayer_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaePlayer_Example.release.xcconfig"; path = "Target Support Files/Pods-SaePlayer_Example/Pods-SaePlayer_Example.release.xcconfig"; sourceTree = "<group>"; };
 		AA8552F4095D500D827C0BF1 /* Pods_SaePlayer_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SaePlayer_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6123ED410130E87A26B6E9A /* Pods-SaePlayer_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SaePlayer_Tests.debug.xcconfig"; path = "Target Support Files/Pods-SaePlayer_Tests/Pods-SaePlayer_Tests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				607FACDC1AFB9204008FA782 /* Images.xcassets */,
 				607FACDE1AFB9204008FA782 /* LaunchScreen.xib */,
 				607FACD31AFB9204008FA782 /* Supporting Files */,
+				8CD4B15F244040CD0047144A /* SpaceTest.swift */,
 			);
 			name = "Example for SaePlayer";
 			path = SaePlayer;
@@ -363,6 +366,7 @@
 				8C5396592431FCC000C9C535 /* NaviTest2CTrl.swift in Sources */,
 				8C558A52242C92880079067A /* VideoCell.swift in Sources */,
 				8C5396532431D49200C9C535 /* Navi+Hidden.swift in Sources */,
+				8CD4B160244040CD0047144A /* SpaceTest.swift in Sources */,
 				8C5396572431FADF00C9C535 /* BaseViewController.swift in Sources */,
 				8C5396552431D69E00C9C535 /* NaviTestVCtrl.swift in Sources */,
 			);

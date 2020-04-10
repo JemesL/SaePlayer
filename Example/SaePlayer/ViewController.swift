@@ -121,8 +121,23 @@ extension ViewController {
         tableView.reloadData()
         tableView.estimatedRowHeight = 300
         tableView.contentInset = UIEdgeInsets(top: 100, left: 0, bottom: 0, right: 0)
-        tableView.resetPlayingStatus()
+        tableView.saeplayer.resetPlayingStatus()
+        
+        let pause = UIButton()
+        pause.setTitle("暂停", for: UIControl.State.normal)
+        pause.backgroundColor = .gray
+        pause.frame.size = CGSize(width: 50, height: 50)
+        pause.center = view.center
+//        pause.frame = CGRect(x: 100, y: 200, width: 50, height: 50)
+        pause.addTarget(self, action: #selector(pausePlayer), for: UIControl.Event.touchUpInside)
+        
+        view.addSubview(pause)
     }
+    
+    @objc func pausePlayer() {
+        tableView.saeplayer.pauseAllPlayer()
+    }
+    
     func testColor() {
         let v = UIView()
         view.addSubview(v)
@@ -159,7 +174,7 @@ extension ViewController: UITableViewDelegate {
 extension ViewController: UIScrollViewDelegate {
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        tableView.updateCellDisplayStatus()
+        tableView.saeplayer.updateCellDisplayStatus()
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
@@ -182,7 +197,7 @@ extension ViewController: UIScrollViewDelegate {
     }
     
     func scrollViewDidEndScroll() {
-        tableView.playingOfList()
+        tableView.saeplayer.playingOfList()
     }
 }
 
