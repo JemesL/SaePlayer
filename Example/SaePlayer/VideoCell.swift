@@ -53,7 +53,7 @@ extension VideoCell {
     }
     
     func setupViews() {
-        player = SaePlayer()
+        player = SaePlayer(custom: SimpleControlView())
         contentView.addSubview(player)
         player.snp.makeConstraints { make in
             make.top.left.right.bottom.equalTo(0)

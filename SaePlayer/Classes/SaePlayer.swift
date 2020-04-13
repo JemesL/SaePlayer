@@ -18,13 +18,13 @@ open class SaePlayer: UIView {
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
     
     
-    typealias ControlType = BaseControlView & PlayControlProtocol
+    public typealias ControlType = BaseControlView & PlayControlProtocol
     // 控制器视图
     fileprivate var controlView: ControlType!
     // 视频内容视图
     fileprivate var layerView: SaePlayerLayer!
     
-    init(custom: ControlType? = nil) {
+    public init(custom: ControlType? = nil) {
         super.init(frame: CGRect.zero)
         if let control = custom {
             self.controlView = control
@@ -35,6 +35,7 @@ open class SaePlayer: UIView {
         let formatHash = String(format: "%12d", self.hash)
         print("hash: \(formatHash) ->   init: \(self.className)")
     }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.controlView = ControlView()

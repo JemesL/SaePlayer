@@ -18,6 +18,8 @@ public protocol SaePlayerLayerProtocol: class {
     func play()
     // 跳转
     func seekTo(_ time: TimeInterval)
+    // 开启关闭自动循环播放
+    func autoRepeat(_ isAuto: Bool)
 }
 
 open class SaePlayerLayer: UIView {
@@ -28,6 +30,7 @@ open class SaePlayerLayer: UIView {
     var playerLayer: AVPlayerLayer? = nil
     fileprivate var periodicTimeObserver: Any? = nil
     fileprivate var needChangeItem: Bool = false
+    var autoRepeat: Bool =  true
     
     // 封面
     var cover: UIImageView!
@@ -40,6 +43,7 @@ open class SaePlayerLayer: UIView {
     // 播放状态
     fileprivate var status: PlayStatus = .none {
         didSet {
+            print("status: \(status)")
             delegate?.setPlayStatus(status)
         }
     }
@@ -217,6 +221,8 @@ extension SaePlayerLayer {
 //                print("observe: paused")
                 if self?.isWaitingBuffered == true {
                     self?.status = .buffering
+                } else if self?.isPlayEnded() == true {
+                    self?.status = .ended
                 } else {
                     self?.status = .pause
                 }
@@ -224,6 +230,7 @@ extension SaePlayerLayer {
 //                print("observe: playing")
                 self?.status = .playing
             case .waitingToPlayAtSpecifiedRate:
+                self?.status = .buffering
 //                print("observe: waitingToPlayAtSpecifiedRate")
                 break
             @unknown default:
@@ -236,7 +243,7 @@ extension SaePlayerLayer {
             let loadTime = CMTimeGetSeconds(time)
             //视频总时间
             let totalTime = CMTimeGetSeconds(duration)
-            if loadTime == totalTime {
+            if loadTime == totalTime, self?.autoRepeat == true {
                 self?.player?.seek(to: CMTime.zero, completionHandler: { (com) in
                     self?.player?.play()
                 })
@@ -244,11 +251,24 @@ extension SaePlayerLayer {
             self?.delegate?.setTotalTime(totalTime)
             self?.delegate?.setCurrentTime(loadTime)
         }
-
     }
 }
 
 extension SaePlayerLayer: SaePlayerLayerProtocol {
+    
+    func isPlayEnded() -> Bool {
+        guard let duration = self.player?.currentItem?.duration else { return false}
+        guard let curTime = self.player?.currentItem?.currentTime() else { return false}
+        //当前正在播放的时间
+        let loadTime = CMTimeGetSeconds(curTime)
+        //视频总时间
+        let totalTime = CMTimeGetSeconds(duration)
+        return loadTime == totalTime
+    }
+    
+    public func autoRepeat(_ isAuto: Bool) {
+        self.autoRepeat = isAuto
+    }
     
     public func pause() {
         // 外部暂停, 等于用户主动暂停
