@@ -60,7 +60,7 @@ open class ControlView: BaseControlView {
     // 时间 - 完整版
     fileprivate var time: UILabel!
     // 播放按钮 - 完整版
-    fileprivate var playBtn: UIButton!
+    fileprivate var playBtn: BaseButton!
     
     // 封面
     fileprivate var cover: UIImageView!
@@ -305,7 +305,7 @@ extension ControlView {
         time.font = .systemFont(ofSize: 12)
         time.text = "00:00|00:00"
         
-        playBtn = UIButton(type: .custom)
+        playBtn = BaseButton(type: .custom)
         playBtn.setImage(imageResourcePath("player_play"), for: .normal)
         playBtn.setImage(imageResourcePath("player_pause"), for: .selected)
         playBtn.addTarget(self, action: #selector(switchPlayerStatus), for: .touchUpInside)

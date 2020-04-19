@@ -32,8 +32,6 @@ open class SaePlayer: UIView {
             self.controlView = ControlView()
         }
         setupViews()
-        let formatHash = String(format: "%12d", self.hash)
-        print("hash: \(formatHash) ->   init: \(self.className)")
     }
     
     override init(frame: CGRect) {
@@ -47,8 +45,6 @@ open class SaePlayer: UIView {
     }
     
     deinit {
-        let formatHash = String(format: "% 12d", self.hash)
-        print("hash: \(formatHash) -> deinit: \(self.className)")
         // 释放 layer
         layerView.clean()
     }
