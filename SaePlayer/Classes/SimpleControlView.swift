@@ -301,7 +301,7 @@ extension SimpleControlView {
         slideTipTime.layer.masksToBounds = true
         
         pauseIcon = UIImageView()
-        pauseIcon.image = UIImage(named: "player_play")// imageResourcePath("player_play")
+        pauseIcon.image = imageResourcePath("player_play")//UIImage(named: "player_play")// 
         pauseIcon.isHidden = true
         
         loadingView = LoadingView()
