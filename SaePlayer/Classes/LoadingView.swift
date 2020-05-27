@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-class LoadingView: UIView {
+public class LoadingView: UIView {
     
     // 主layer
     var shapeLayer:CAShapeLayer!
@@ -27,7 +27,7 @@ class LoadingView: UIView {
 //        setUI()
     }
     
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
         setUI()
     }
@@ -101,7 +101,7 @@ class LoadingView: UIView {
         }
     }
     
-    override var isHidden: Bool {
+    public override var isHidden: Bool {
         didSet {
             showOrHidden(isHidden: isHidden)
         }

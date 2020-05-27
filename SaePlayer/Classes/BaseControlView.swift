@@ -13,7 +13,7 @@ import UIKit
 open class BaseControlView: UIView {
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
 //    weak var delegate: SaePlayerLayerProtocol? = nil
-    weak var delegate: PlayControlDelegate? = nil
+    public weak var delegate: PlayControlDelegate? = nil
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .clear
@@ -25,7 +25,7 @@ open class BaseControlView: UIView {
 }
 
 extension BaseControlView {
-    func formatSecondsToString(_ seconds: TimeInterval) -> String {
+    public func formatSecondsToString(_ seconds: TimeInterval) -> String {
         if seconds.isNaN {
             return "00:00"
         }
