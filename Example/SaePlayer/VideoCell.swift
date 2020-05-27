@@ -14,7 +14,8 @@ import SnapKit
 let VideoCoverSuffix = "?vframe/jpg/offset/1"
 
 class VideoCell: UITableViewCell {
-    
+    var index: IndexPath? = nil
+    var tbHash: String? = nil
     var player: SaePlayer!
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -41,7 +42,7 @@ class VideoCell: UITableViewCell {
 
 extension VideoCell {
     func setData(url: String) {
-        self.player.setData(url: url, cover: "\(url)\(VideoCoverSuffix)")
+        self.player.setData(url: url, cover: "\(url)\(VideoCoverSuffix)", defaultCover: "loading_lightdark_360x294")
     }
     
     func play() {
@@ -53,7 +54,13 @@ extension VideoCell {
     }
     
     func setupViews() {
-        player = SaePlayer(custom: SimpleControlView())
+        let sim = SimpleControlView()
+        
+        sim.pauseBlock = { [weak self] in
+            guard let self = self else { return }
+            AutoPlayManager.shared.pause(self.index!, hash: self.tbHash!)
+        }
+        player = SaePlayer(custom: sim)
         contentView.addSubview(player)
         player.snp.makeConstraints { make in
             make.top.left.right.bottom.equalTo(0)

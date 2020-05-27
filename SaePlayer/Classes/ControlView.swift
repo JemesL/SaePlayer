@@ -8,15 +8,24 @@
 
 import Foundation
 import UIKit
+import Kingfisher
 
 // 播放器的状态
 public enum PlayStatus {
+    // 准备播放
+    case readyToPlay
     // 正在播放
     case playing
     // 暂停
     case pause
+    // 用户手动暂停
+    case userPause
     // 缓冲
     case buffering
+    // 缓冲结束
+    case bufferFinished
+    // 播放结束
+    case playedToTheEnd
     // 播放结束
     case ended
     //
@@ -24,6 +33,7 @@ public enum PlayStatus {
 }
 
 // 用于外部调用 更新/获取 control 状态的协议
+// 自己遵守 外部传入调用
 public protocol PlayControlProtocol: class {
     // 获取当前时间
     func getCurrentTime()
@@ -36,7 +46,32 @@ public protocol PlayControlProtocol: class {
     // 重置某些设置
     func resetControl()
     // 设置封面
-    func setCoverUrl(_ url: String)
+    func setCoverUrl(_ url: String, default: String)
+}
+
+// 他人遵守, 接受控制面板的各种事件
+public protocol PlayControlDelegate: class {
+    
+    // call when control view choose a definition
+    func controlView(controlView: PlayControlProtocol, didChooseDefinition index: Int)
+    
+    // call when control view pressed an button
+    func controlView(controlView: PlayControlProtocol, didPressButton button: UIButton)
+    
+    // call when slider action trigged
+    func controlView(controlView: PlayControlProtocol, slider: UISlider, onSliderEvent event: UIControl.Event)
+    
+    // call when needs to change playback rate
+    func controlView(controlView: PlayControlProtocol, didChangeVideoPlaybackRate rate: Float)
+    
+    
+    func controlViewPause(controlView: PlayControlProtocol)
+    
+    func controlViewPlay(controlView: PlayControlProtocol)
+    
+    func controlViewSeek(controlView: PlayControlProtocol, toTime: TimeInterval)
+    
+    func controlViewPanGesture(controlView: PlayControlProtocol, pan: UIPanGestureRecognizer)
 }
 
 // ControlView 通过 delegate 给 player
@@ -44,6 +79,8 @@ open class ControlView: BaseControlView {
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
     
 //    var delegate: SaePlayerLayerProtocol? = nil
+    
+    
     // 控制组件状态
     fileprivate var isSimple: Bool = true
     // 简版控制组件
@@ -99,9 +136,9 @@ open class ControlView: BaseControlView {
 
 extension ControlView: PlayControlProtocol {
     
-    public func setCoverUrl(_ url: String) {
+    public func setCoverUrl(_ url: String, default defaultCover: String) {
         if url != self.url {
-            self.cover.kf.setImage(with: URL(string: url))
+            self.cover.kf.setImage(with: URL(string: url), placeholder: UIImage(named: defaultCover))
             self.url = url
         }
     }
@@ -147,6 +184,15 @@ extension ControlView: PlayControlProtocol {
             coverHidden()
             // 播放状态
             playBtn.isSelected = true
+            break
+        case .readyToPlay:
+            break
+        case .userPause:
+            playBtn.isSelected = false
+            break
+        case .bufferFinished:
+            break
+        case .playedToTheEnd:
             break
         }
     }
@@ -237,7 +283,12 @@ extension ControlView {
     
     @objc func switchPlayerStatus() {
         playBtn.isSelected = !playBtn.isSelected
-        playBtn.isSelected ? delegate?.play() : delegate?.pause()
+        if playBtn.isSelected {
+            delegate?.controlViewPlay(controlView: self)
+        } else {
+            delegate?.controlViewPause(controlView: self)
+        }
+//        playBtn.isSelected ? delegate?.play() : delegate?.pause()
     }
     
     @objc func sliderTouchBegan(_ sender: UISlider) {
@@ -250,7 +301,8 @@ extension ControlView {
 
     @objc func sliderTouchEnded(_ sender: UISlider) {
         let currentTime = Double(sender.value) * totalDuration
-        delegate?.seekTo(currentTime)
+//        delegate?.seekTo(currentTime)
+        delegate?.controlViewSeek(controlView: self, toTime: currentTime)
         isDragSliding = false
     }
 }

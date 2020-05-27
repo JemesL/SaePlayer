@@ -154,6 +154,9 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if let cell = tableView.dequeueReusableCell(withIdentifier: "VideoCell") as? VideoCell {
             cell.setData(url: Videos[indexPath.row])
+            cell.index = indexPath
+            let formatHash = String(format: "%12d", tableView.hashValue)
+            cell.tbHash = formatHash
             return cell
         }
         return UITableViewCell()

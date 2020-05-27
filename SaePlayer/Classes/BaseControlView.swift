@@ -12,7 +12,8 @@ import UIKit
 // 基础控制视图, 主要提供一些基础计算
 open class BaseControlView: UIView {
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
-    weak var delegate: SaePlayerLayerProtocol? = nil
+//    weak var delegate: SaePlayerLayerProtocol? = nil
+    weak var delegate: PlayControlDelegate? = nil
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .clear

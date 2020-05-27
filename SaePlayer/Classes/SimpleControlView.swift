@@ -73,6 +73,8 @@ public class SimpleControlView: BaseControlView {
     // 手势正在拖拽
     open var isDragingGesture: Bool = false
     
+    open var pauseBlock: (() -> ())?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -90,9 +92,9 @@ public class SimpleControlView: BaseControlView {
 
 extension SimpleControlView: PlayControlProtocol {
     
-    public func setCoverUrl(_ url: String) {
+    public func setCoverUrl(_ url: String, default defaultCover: String) {
         if url != self.url {
-            self.cover.kf.setImage(with: URL(string: url))
+            self.cover.kf.setImage(with: URL(string: url), placeholder: UIImage(named: defaultCover))
             self.url = url
         }
     }
@@ -151,6 +153,14 @@ extension SimpleControlView: PlayControlProtocol {
             playBtn.isSelected = true
             panGesture.isEnabled = true
             pauseIcon.isHidden = true
+            break
+        case .readyToPlay:
+            break
+        case .userPause:
+            break
+        case .bufferFinished:
+            break
+        case .playedToTheEnd:
             break
         }
     }
@@ -237,7 +247,16 @@ extension SimpleControlView {
     
     @objc func switchPlayerStatus() {
         playBtn.isSelected = !playBtn.isSelected
-        playBtn.isSelected ? delegate?.play() : delegate?.pause()
+//        playBtn.isSelected ? delegate?.play() : delegate?.pause()
+        
+        if playBtn.isSelected {
+            delegate?.controlViewPlay(controlView: self)
+        } else {
+            delegate?.controlViewPause(controlView: self)
+        }
+        if playBtn.isSelected == false {
+            pauseBlock?()
+        }
     }
     
     @objc func sliderTouchBegan(_ sender: UISlider) {
@@ -250,7 +269,8 @@ extension SimpleControlView {
 
     @objc func sliderTouchEnded(_ sender: UISlider) {
         let currentTime = Double(sender.value) * totalDuration
-        delegate?.seekTo(currentTime)
+//        delegate?.seekTo(currentTime)
+        delegate?.controlViewSeek(controlView: self, toTime: currentTime)
         isDragSliding = false
     }
 }
@@ -387,13 +407,13 @@ extension SimpleControlView {
         // 我们要响应水平移动和垂直移动
         // 根据上次和本次移动的位置，算出一个速率的point
         let velocityPoint = pan.velocity(in: self)
-        
+        delegate?.controlViewPanGesture(controlView: self, pan: pan)
         // 判断是垂直移动还是水平移动
         switch pan.state {
         case UIGestureRecognizer.State.began:
             
             isDragingGesture = true
-            delegate?.autoRepeat(!isDragingGesture)
+//            delegate?.autoRepeat(!isDragingGesture)
             // 使用绝对值来判断移动的方向
             let x = abs(velocityPoint.x)
             let y = abs(velocityPoint.y)
@@ -440,7 +460,8 @@ extension SimpleControlView {
                 
                 self.currentTime = TimeInterval(self.sumTime)
                 updateSimpleProgress()
-                delegate?.seekTo(currentTime)
+//                delegate?.seekTo(currentTime)
+                delegate?.controlViewSeek(controlView: self, toTime: currentTime)
                 hiddenSlideTipTime()
 //                controlView.hideSeekToView()
 //                isSliderSliding = false
@@ -463,7 +484,7 @@ extension SimpleControlView {
                 break
             }
             isDragingGesture = false
-            delegate?.autoRepeat(!isDragingGesture)
+//            delegate?.autoRepeat(!isDragingGesture)
         default:
             break
         }

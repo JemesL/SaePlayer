@@ -9,20 +9,29 @@
 import Foundation
 import UIKit
 import AVKit
-import Kingfisher
 import SaeKit
 
 let LEFT_RIGHT_MARGIN: CGFloat = 15
 
+protocol SaePlayerDelegate: class {
+    func saeplayer(player: SaePlayer, status: PlayStatus)
+}
+
+extension SaePlayerDelegate {
+    func saeplayer(player: SaePlayer, status: PlayStatus) {}
+}
+
 open class SaePlayer: UIView {
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
-    
     
     public typealias ControlType = BaseControlView & PlayControlProtocol
     // 控制器视图
     fileprivate var controlView: ControlType!
     // 视频内容视图
     fileprivate var layerView: SaePlayerLayer!
+    
+    // 代理
+    weak var delegate: SaePlayerDelegate? = nil
     
     public init(custom: ControlType? = nil) {
         super.init(frame: CGRect.zero)
@@ -52,9 +61,9 @@ open class SaePlayer: UIView {
 
 // 一些actions
 extension SaePlayer {
-    public func setData(url: String, cover: String) {
+    public func setData(url: String, cover: String, defaultCover: String) {
         
-        self.controlView.setCoverUrl(cover)
+        self.controlView.setCoverUrl(cover, default: defaultCover)
         self.layerView.setData(url: url, cover: cover)
     }
     
@@ -72,8 +81,8 @@ extension SaePlayer {
         
         layerView = SaePlayerLayer()
         
-        controlView.delegate = layerView
-        layerView.delegate = controlView
+        controlView.delegate = self
+        layerView.delegate = self
         
         addSubview(layerView)
         addSubview(controlView)
@@ -91,5 +100,72 @@ extension SaePlayer {
 
     public func pause() {
         layerView.pause()
+    }
+}
+
+extension SaePlayer: PlayerlayerDelegate {
+    
+    public func saeLayer(layer: SaePlayerLayer, playerStateDidChange state: PlayStatus) {
+        controlView.setPlayStatus(state)
+        delegate?.saeplayer(player: self, status: state)
+    }
+    
+    public func saeLayer(layer: SaePlayerLayer, loadedTimeDidChange loadedDuration: TimeInterval, totalDuration: TimeInterval) {
+//        controlView.setCurrentTime(loadedDuration)
+//        controlView.setTotalTime(totalDuration)
+    }
+    
+    public func saeLayer(layer: SaePlayerLayer, playTimeDidChange currentTime: TimeInterval, totalTime: TimeInterval) {
+        controlView.setCurrentTime(currentTime)
+        controlView.setTotalTime(totalTime)
+    }
+    
+    public func saeLayer(layer: SaePlayerLayer, playerIsPlaying playing: Bool) {
+        
+    }
+    
+}
+
+extension SaePlayer: PlayControlDelegate {
+    public func controlViewPanGesture(controlView: PlayControlProtocol, pan: UIPanGestureRecognizer) {
+        switch pan.state {
+        case .began:
+            layerView.autoRepeat(false)
+            break
+        case .ended:
+            layerView.autoRepeat(true)
+            break
+        default:
+            break
+        }
+    }
+    
+    public func controlView(controlView: PlayControlProtocol, didChooseDefinition index: Int) {
+        
+    }
+    
+    public func controlView(controlView: PlayControlProtocol, didPressButton button: UIButton) {
+        
+    }
+    
+    public func controlView(controlView: PlayControlProtocol, slider: UISlider, onSliderEvent event: UIControl.Event) {
+        
+    }
+    
+    public func controlView(controlView: PlayControlProtocol, didChangeVideoPlaybackRate rate: Float) {
+        
+    }
+    
+    // 等同用户暂停
+    public func controlViewPause(controlView: PlayControlProtocol) {
+        layerView.pause(isUser: true)
+    }
+    
+    public func controlViewPlay(controlView: PlayControlProtocol) {
+        layerView.play()
+    }
+    
+    public func controlViewSeek(controlView: PlayControlProtocol, toTime time: TimeInterval) {
+        layerView.seekTo(time)
     }
 }
