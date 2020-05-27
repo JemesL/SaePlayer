@@ -22,7 +22,7 @@ open class LoadingView: UIView {
     // 色卡2
     var colors2:[CGColor] = [UIColor.white.withAlphaComponent(0.5).cgColor,UIColor.white.withAlphaComponent(0).cgColor]
     
-    init() {
+    public init() {
         super.init(frame: CGRect.zero)
 //        setUI()
     }

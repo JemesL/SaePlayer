@@ -14,7 +14,7 @@ open class BaseControlView: UIView {
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
 //    weak var delegate: SaePlayerLayerProtocol? = nil
     public weak var delegate: PlayControlDelegate? = nil
-    override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .clear
     }
