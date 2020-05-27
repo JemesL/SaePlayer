@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public class LoadingView: UIView {
+open class LoadingView: UIView {
     
     // 主layer
     var shapeLayer:CAShapeLayer!
@@ -32,7 +32,7 @@ public class LoadingView: UIView {
         setUI()
     }
     
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
