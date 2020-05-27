@@ -13,7 +13,7 @@ import SaeKit
 
 let LEFT_RIGHT_MARGIN: CGFloat = 15
 
-protocol SaePlayerDelegate: class {
+public protocol SaePlayerDelegate: class {
     func saeplayer(player: SaePlayer, status: PlayStatus)
 }
 
