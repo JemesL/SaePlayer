@@ -31,7 +31,7 @@ open class SaePlayer: UIView {
     fileprivate var layerView: SaePlayerLayer!
     
     // 代理
-    weak var delegate: SaePlayerDelegate? = nil
+    public weak var delegate: SaePlayerDelegate? = nil
     
     public init(custom: ControlType? = nil) {
         super.init(frame: CGRect.zero)
