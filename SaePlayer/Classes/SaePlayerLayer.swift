@@ -30,10 +30,23 @@ public protocol PlayerlayerDelegate: class {
     func saeLayer(layer: SaePlayerLayer, playerIsPlaying playing: Bool)
 }
 
+open class CustomPlayer: AVPlayer {
+    public override init() {
+        super.init()
+        let formatHash = String(format: "%12d", self.hash)
+        print("hash: \(formatHash) ->   init: \(self.className)")
+    }
+    
+    deinit {
+        let formatHash = String(format: "% 12d", self.hash)
+        print("hash: \(formatHash) -> deinit: \(self.className)")
+    }
+}
+
 open class SaePlayerLayer: UIView {
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
     
-    var player: AVPlayer? = nil
+    var player: CustomPlayer? = nil
     var playerItem: AVPlayerItem? = nil
     var playerLayer: AVPlayerLayer? = nil
     fileprivate var periodicTimeObserver: Any? = nil
@@ -208,7 +221,7 @@ extension SaePlayerLayer {
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .white
         
-        self.player = AVPlayer()
+        self.player = CustomPlayer()
         self.player?.rate = 1.0
         
         self.cover = UIImageView()
@@ -224,7 +237,7 @@ extension SaePlayerLayer {
     }
     
     func setupActions() {
-        self.player?.sae.observe(\AVPlayer.timeControlStatus, options: .new) { [weak self] (player, change) in
+        self.player?.sae.observe(\CustomPlayer.timeControlStatus, options: .new) { [weak self] (player, change) in
             //            guard self?.url == "https://qnimage.bamaying.com/2fe55de6ac84762ba75be4cb9dec17ae.mp4" else { return }
             switch player.timeControlStatus {
             case .paused:
