@@ -145,6 +145,9 @@ extension SaePlayerLayer {
         self.playerItem?.sae.observe(\AVPlayerItem.status, options: .new) { [weak self] (item, change) in
             switch item.status {
             case .readyToPlay:
+                if self?.status == PlayStatus.playing {
+                    self?.player?.play()
+                }
                 break
             case .unknown:
                 break
