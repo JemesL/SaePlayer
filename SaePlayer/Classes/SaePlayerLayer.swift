@@ -60,8 +60,9 @@ open class SaePlayerLayer: UIView {
 //    weak var delegate: PlayControlProtocol? = nil
     weak var delegate: PlayerlayerDelegate? = nil
     
-    
-    // 播放状态
+    // 逻辑播放状态(只有播放/暂停,只用于内部部分判断)
+    fileprivate var shouldStatus: PlayStatus = .none
+    // 流媒体播放状态
     fileprivate var status: PlayStatus = .none {
         didSet {
             print("status: \(status)")
@@ -96,6 +97,7 @@ open class SaePlayerLayer: UIView {
 extension SaePlayerLayer {
     
     func clean() {
+        self.shouldStatus = .pause
         self.player?.pause()
         if let ob = periodicTimeObserver {
             self.player?.removeTimeObserver(ob)
@@ -145,7 +147,7 @@ extension SaePlayerLayer {
         self.playerItem?.sae.observe(\AVPlayerItem.status, options: .new) { [weak self] (item, change) in
             switch item.status {
             case .readyToPlay:
-                if self?.status == PlayStatus.playing {
+                if self?.shouldStatus == PlayStatus.playing {
                     self?.player?.play()
                 }
                 break
@@ -300,14 +302,16 @@ extension SaePlayerLayer: SaePlayerLayerProtocol {
     }
     
     public func pause(isUser: Bool = false) {
-        // 外部暂停, 等于用户主动暂停
+        // 外部暂停(代码暂停,用户暂停)
         isUserPause = isUser
         isWaitingBuffered = false
         player?.pause()
+        shouldStatus = .pause
     }
     
     public func play() {
         isUserPause = false
+        shouldStatus = .playing
         initAndPlay()
     }
     
