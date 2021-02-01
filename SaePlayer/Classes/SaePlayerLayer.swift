@@ -26,8 +26,11 @@ public protocol SaePlayerLayerProtocol: class {
 public protocol PlayerlayerDelegate: class {
     func saeLayer(layer: SaePlayerLayer, playerStateDidChange state: PlayStatus)
     func saeLayer(layer: SaePlayerLayer, loadedTimeDidChange loadedDuration: TimeInterval, totalDuration: TimeInterval)
+    func saeLayer(layer: SaePlayerLayer, item: AVPlayerItem, newRanges loadedTimeRanges: [NSValue])
     func saeLayer(layer: SaePlayerLayer, playTimeDidChange currentTime: TimeInterval, totalTime: TimeInterval)
     func saeLayer(layer: SaePlayerLayer, playerIsPlaying playing: Bool)
+    func saeLayer(layer: SaePlayerLayer, videoSize: CGSize)
+    func saeLayer(layer: SaePlayerLayer, seekIsCompleted: Bool)
 }
 
 open class CustomPlayer: AVPlayer {
@@ -131,7 +134,16 @@ extension SaePlayerLayer {
 //        if let ob = periodicTimeObserver {
 //            self.player?.removeTimeObserver(ob)
 //        }
-        self.playerItem = AVPlayerItem(asset: VideoAssetManager.shared.getAsset(with: url))
+        
+        let asset = VideoAssetManager.shared.getAsset(with: url)
+        asset.loadValuesAsynchronously(forKeys: ["tracks"]) { [weak self, weak asset] in
+            DispatchQueue.main.asyncAfter(deadline: .now()) {
+                if let asset = asset, asset.isPlayable{
+                    self?.loadedResourceForPlay(asset: asset)
+                }
+            }
+        }
+        self.playerItem = AVPlayerItem(asset: asset)
         
         self.player?.replaceCurrentItem(with: playerItem)
         if let totalTime = self.playerItem?.duration, let curTime = self.playerItem?.currentTime() {
@@ -160,10 +172,13 @@ extension SaePlayerLayer {
             }
         }
         
-        self.playerItem?.sae.observe(\AVPlayerItem.loadedTimeRanges, options: .new, changeHandler: { (item, change) in
+        self.playerItem?.sae.observe(\AVPlayerItem.loadedTimeRanges, options: .new, changeHandler: { [weak self] (item, change) in
+            guard let self = self else { return }
             // 计算缓冲进度
-            guard let items = change.newValue else { return }
-            if let timeInterVarl = self.availableDuration(ranges: items) {
+            guard let timeRange = change.newValue else { return }
+            
+            self.delegate?.saeLayer(layer: self, item: item, newRanges: timeRange)
+            if let timeInterVarl = self.availableDuration(ranges: timeRange) {
                 let duration        = item.duration
                 let totalDuration   = CMTimeGetSeconds(duration)
                 // 缓冲进度
@@ -218,12 +233,42 @@ extension SaePlayerLayer {
             }
         }
     }
+    
+    // 加载视频相关信息
+    func loadedResourceForPlay(asset: AVURLAsset) {
+        for track in asset.tracks {
+            if track.mediaType == .video {
+                self.delegate?.saeLayer(layer: self, videoSize: track.naturalSize)
+                return
+            }
+        }
+    }
+    
+    
+    /// 设置视频内容显示mode, 以及背景色
+    /// - Parameter gravity:
+    func setFullScreenStyle(gravity: AVLayerVideoGravity) {
+        playerLayer?.videoGravity = gravity
+        switch gravity {
+        case .resize:
+            backgroundColor = UIColor.black
+            break
+        case .resizeAspect:
+            backgroundColor = UIColor.black
+            break
+        case .resizeAspectFill:
+            backgroundColor = UIColor.clear
+            break
+        default:
+            break
+        }
+    }
 }
 
 extension SaePlayerLayer {
     func setupViews() {
         translatesAutoresizingMaskIntoConstraints = false
-        backgroundColor = .white
+        backgroundColor = .black
         
         self.player = CustomPlayer()
         self.player?.rate = 1.0
@@ -233,11 +278,11 @@ extension SaePlayerLayer {
         self.cover.clipsToBounds = true
         self.cover.isHidden = false
         let playerLayer = AVPlayerLayer(player: player)
-        playerLayer.videoGravity = .resizeAspectFill
-        
-        self.layer.addSublayer(playerLayer)
-
         self.playerLayer = playerLayer
+        setFullScreenStyle(gravity: .resizeAspectFill)
+        playerLayer.contentsScale = UIScreen.main.scale
+        self.layer.addSublayer(playerLayer)
+        self.clipsToBounds = true
     }
     
     func setupActions() {
@@ -317,8 +362,14 @@ extension SaePlayerLayer: SaePlayerLayerProtocol {
     
     public func seekTo(_ time: TimeInterval) {
         let player = self.player
-        player?.seek(to: CMTime(seconds: time, preferredTimescale: 1000)) { [weak self] (isCom) in
-            self?.player?.play()
-        }
+        player?.seek(
+            to: CMTime(seconds: time, preferredTimescale: 1000),
+            toleranceBefore: CMTimeMake(value: 1, timescale: 1000),
+            toleranceAfter: CMTimeMake(value: 1, timescale: 1000),
+            completionHandler: { [weak self] isCom in
+                guard let self = self else { return }
+                self.delegate?.saeLayer(layer: self, seekIsCompleted: isCom)
+                self.player?.play()
+        })
     }
 }

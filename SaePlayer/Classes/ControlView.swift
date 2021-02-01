@@ -47,10 +47,17 @@ public protocol PlayControlProtocol: class {
     func resetControl()
     // 设置封面
     func setCoverUrl(_ url: String, default: String)
+    //
+    func setLoadedTimeRanges(range: [NSValue])
+    // 是否 seek 完成
+    func setSeekStatus(isCompleted: Bool)
 }
 
 // 他人遵守, 接受控制面板的各种事件
 public protocol PlayControlDelegate: class {
+    
+    // 进入全屏/退出全屏
+    func controlView(controlView: PlayControlProtocol, fullScreen: Bool)
     
     // call when control view choose a definition
     func controlView(controlView: PlayControlProtocol, didChooseDefinition index: Int)
@@ -63,7 +70,6 @@ public protocol PlayControlDelegate: class {
     
     // call when needs to change playback rate
     func controlView(controlView: PlayControlProtocol, didChangeVideoPlaybackRate rate: Float)
-    
     
     func controlViewPause(controlView: PlayControlProtocol)
     
@@ -98,6 +104,10 @@ open class ControlView: BaseControlView {
     fileprivate var time: UILabel!
     // 播放按钮 - 完整版
     fileprivate var playBtn: BaseButton!
+    // 播放按钮 - 完整版
+    fileprivate var bigPlayBtn: BaseButton!
+    // 全屏按钮
+    fileprivate var fullBtn: BaseButton!
     
     // 封面
     fileprivate var cover: UIImageView!
@@ -113,6 +123,10 @@ open class ControlView: BaseControlView {
     open var totalDuration: TimeInterval = 0
     // 当前的播放时间
     open var currentTime: TimeInterval = 0
+    // 全屏状态
+    fileprivate var fullScreenStatus: Bool = false
+    // seek后, 等待缓冲结束再接受进度条的事件
+    fileprivate var waitingSeekActionEnd: Bool = false
     
     // 手势
     /// Gesture used to show / hide control view
@@ -135,6 +149,14 @@ open class ControlView: BaseControlView {
 }
 
 extension ControlView: PlayControlProtocol {
+    public func setSeekStatus(isCompleted: Bool) {
+        if isCompleted {
+            waitingSeekActionEnd = false
+        }
+    }
+    
+    public func setLoadedTimeRanges(range: [NSValue]) {
+    }
     
     public func setCoverUrl(_ url: String, default defaultCover: String) {
         if url != self.url {
@@ -147,12 +169,19 @@ extension ControlView: PlayControlProtocol {
         switchControlView(isSimple: true)
     }
     
-    
     public func setTotalTime(_ total: TimeInterval) {
+        guard waitingSeekActionEnd == false else { return }
         totalDuration = total
         updateTime()
         updateSlide()
         updateSimpleProgress()
+    }
+    
+    public func setCurrentTime(_ cur: TimeInterval) {
+        guard waitingSeekActionEnd == false else { return }
+        currentTime = cur
+        updateTime()
+        updateSlide()
     }
     
     public func getCurrentTime() {
@@ -166,16 +195,20 @@ extension ControlView: PlayControlProtocol {
         case .playing:
             coverHidden()
             playBtn.isSelected = true
+            bigPlayBtn.isSelected = true
             break
         case .pause:
             coverShow()
             playBtn.isSelected = false
+            bigPlayBtn.isSelected = false
             break
         case .ended:
             playBtn.isSelected = false
+            bigPlayBtn.isSelected = false
             break
         case .none:
             playBtn.isSelected = false
+            bigPlayBtn.isSelected = false
             break
         case .buffering:
             // loading 动画
@@ -184,11 +217,13 @@ extension ControlView: PlayControlProtocol {
             coverHidden()
             // 播放状态
             playBtn.isSelected = true
+            bigPlayBtn.isSelected = true
             break
         case .readyToPlay:
             break
         case .userPause:
             playBtn.isSelected = false
+            bigPlayBtn.isSelected = false
             break
         case .bufferFinished:
             break
@@ -197,11 +232,6 @@ extension ControlView: PlayControlProtocol {
         }
     }
     
-    public func setCurrentTime(_ cur: TimeInterval) {
-        currentTime = cur
-        updateTime()
-        updateSlide()
-    }
     
     func updateSlide() {
         guard totalDuration > 0 && isDragSliding == false else { return }
@@ -282,13 +312,25 @@ extension ControlView {
     }
     
     @objc func switchPlayerStatus() {
-        playBtn.isSelected = !playBtn.isSelected
-        if playBtn.isSelected {
+//        playBtn.isSelected = !playBtn.isSelected
+//        bigPlayBtn.isSelected = playBtn.isSelected
+//        if playBtn.isSelected {
+//            delegate?.controlViewPlay(controlView: self)
+//        } else {
+//            delegate?.controlViewPause(controlView: self)
+//        }
+//        playBtn.isSelected ? delegate?.play() : delegate?.pause()
+        setPlayerStatus(isPlaying: !playBtn.isSelected)
+    }
+    
+    func setPlayerStatus(isPlaying: Bool) {
+        playBtn.isSelected = isPlaying
+        bigPlayBtn.isSelected = isPlaying
+        if isPlaying {
             delegate?.controlViewPlay(controlView: self)
         } else {
             delegate?.controlViewPause(controlView: self)
         }
-//        playBtn.isSelected ? delegate?.play() : delegate?.pause()
     }
     
     @objc func sliderTouchBegan(_ sender: UISlider) {
@@ -300,8 +342,9 @@ extension ControlView {
     }
 
     @objc func sliderTouchEnded(_ sender: UISlider) {
+        
         let currentTime = Double(sender.value) * totalDuration
-//        delegate?.seekTo(currentTime)
+        waitingSeekActionEnd = true
         delegate?.controlViewSeek(controlView: self, toTime: currentTime)
         isDragSliding = false
     }
@@ -363,22 +406,48 @@ extension ControlView {
         playBtn.addTarget(self, action: #selector(switchPlayerStatus), for: .touchUpInside)
         playBtn.clickEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
+        bigPlayBtn = BaseButton(type: .custom)
+        bigPlayBtn.setImage(imageResourcePath("player_play"), for: .normal)
+        bigPlayBtn.setImage(imageResourcePath("player_pause"), for: .selected)
+        bigPlayBtn.addTarget(self, action: #selector(switchPlayerStatus), for: .touchUpInside)
+        bigPlayBtn.clickEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        
+        fullBtn = BaseButton(type: .custom)
+        fullBtn.setImage(imageResourcePath("player_fullscreen"), for: .normal)
+        fullBtn.clickEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        fullBtn.addTarget(self, action: #selector(switchScreenStatus), for: .touchUpInside)
         v.addSubview(playBtn)
+        v.addSubview(bigPlayBtn)
+        v.addSubview(fullBtn)
         v.addSubview(slide)
         v.addSubview(time)
         return v
+    }
+    
+    @objc func switchScreenStatus() {
+        self.fullScreenStatus.toggle()
+        self.delegate?.controlView(controlView: self, fullScreen: self.fullScreenStatus)
     }
     
     func setupConstraints() {
         playBtn.consLeft(10)
         playBtn.consBottom(-10)
         
+        bigPlayBtn.consWidth(40)
+        bigPlayBtn.consHeight(40)
+        bigPlayBtn.consSuperCenterY()
+        bigPlayBtn.consSuperCenterX()
+        
         slide.consLeft(10, toItem: playBtn, destAttri: .right)
         slide.consCenterY(toItem: playBtn, destAttri: .centerY)
 
         time.consCenterY(toItem: slide, destAttri: .centerY)
         time.consLeft(10, toItem: slide, destAttri: .right)
-        time.consRight(-10)
+//        time.consRight(-10)
+        time.consRight(-10, toItem: fullBtn, destAttri: .left)
+        
+        fullBtn.consRight(-10)
+        fullBtn.consBottom(-10)
         
         progressTime.consLeft(0)
         progressTime.consBottom(0)

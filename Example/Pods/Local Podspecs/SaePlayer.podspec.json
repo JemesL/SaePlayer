@@ -1,7 +1,7 @@
 {
   "name": "SaePlayer",
-  "version": "0.1.0",
-  "summary": "A short description of SaePlayer.",
+  "version": "0.1.3",
+  "summary": "Release 0.1.3",
   "description": "TODO: Add long description of the pod here.",
   "homepage": "https://github.com/Jemesl/SaePlayer",
   "license": {
@@ -13,13 +13,18 @@
   },
   "source": {
     "git": "https://github.com/Jemesl/SaePlayer.git",
-    "tag": "0.1.0"
+    "tag": "0.1.3"
   },
   "platforms": {
     "ios": "10.0"
   },
   "source_files": "SaePlayer/Classes/**/*",
   "swift_versions": "5.0",
+  "resource_bundles": {
+    "SaePlayer": [
+      "SaePlayer/Assets/*.xcassets"
+    ]
+  },
   "dependencies": {
     "Kingfisher": [
       "~> 5.9.0"

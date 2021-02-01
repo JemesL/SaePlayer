@@ -55,7 +55,8 @@ public class SimpleControlView: BaseControlView {
     open var totalDuration: TimeInterval = 0
     // 当前的播放时间
     open var currentTime: TimeInterval = 0
-    
+    // seek后, 等待缓冲结束再接受进度条的事件
+    fileprivate var waitingSeekActionEnd: Bool = false
     // 手势
     /// Gesture used to show / hide control view
     open var tapGesture: UITapGestureRecognizer!
@@ -91,6 +92,14 @@ public class SimpleControlView: BaseControlView {
 }
 
 extension SimpleControlView: PlayControlProtocol {
+    public func setSeekStatus(isCompleted: Bool) {
+        if isCompleted {
+            waitingSeekActionEnd = false
+        }
+    }
+    
+    public func setLoadedTimeRanges(range: [NSValue]) {
+    }
     
     public func setCoverUrl(_ url: String, default defaultCover: String) {
         if url != self.url {
@@ -166,6 +175,7 @@ extension SimpleControlView: PlayControlProtocol {
     }
     
     public func setCurrentTime(_ cur: TimeInterval) {
+        guard waitingSeekActionEnd == false else { return }
         currentTime = cur
         updateTime()
         updateSlide()

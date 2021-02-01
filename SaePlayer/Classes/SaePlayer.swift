@@ -22,6 +22,16 @@ extension SaePlayerDelegate {
 }
 
 open class SaePlayer: UIView {
+    // 相关一些配置
+    public struct Config {
+        // 视频全屏时 内容显示模式
+        var gravityInFullScreen: AVLayerVideoGravity = .resizeAspectFill
+        // 视频在原视图时 内容显示模式
+        var gravityInOriginScreen: AVLayerVideoGravity = .resizeAspectFill
+        // 视频尺寸
+        var videoSize: CGSize? = nil
+    }
+    
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
     
     public typealias ControlType = BaseControlView & PlayControlProtocol
@@ -30,24 +40,25 @@ open class SaePlayer: UIView {
     // 视频内容视图
     fileprivate var layerView: SaePlayerLayer!
     
+    // 控制器和视频展示视频的父视图, 方便进入全屏
+    fileprivate var bg: UIView!
+    
     // 代理
     public weak var delegate: SaePlayerDelegate? = nil
     
-    public init(custom: ControlType? = nil) {
+    public var config: Config? = nil
+    public init(custom: ControlType? = nil, config: Config? = nil) {
         super.init(frame: CGRect.zero)
-        if let control = custom {
-            self.controlView = control
-        } else {
-            self.controlView = ControlView()
-        }
+        self.controlView = custom ?? ControlView()
+        self.config = config ?? Config()
         setupViews()
     }
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.controlView = ControlView()
-        setupViews()
-    }
+//    override init(frame: CGRect) {
+//        super.init(frame: frame)
+//        self.controlView = ControlView()
+//        setupViews()
+//    }
 
     required public init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -79,15 +90,95 @@ extension SaePlayer {
         translatesAutoresizingMaskIntoConstraints = false
         backgroundColor = .white
         
+        bg = UIView()
+        bg.backgroundColor = .clear
         layerView = SaePlayerLayer()
-        
         controlView.delegate = self
         layerView.delegate = self
         
-        addSubview(layerView)
-        addSubview(controlView)
+        addSubview(bg)
+        bg.addSubview(layerView)
+        bg.addSubview(controlView)
         layerView.consEdge(UIEdgeInsets.zero)
         controlView.consEdge(UIEdgeInsets.zero)
+        
+        bg.consEdge(UIEdgeInsets.zero)
+        
+    }
+    
+    func isFullScreenlandscape() -> Bool {
+        guard let size = config?.videoSize else { return false }
+        return size.width > size.height
+    }
+    
+    // 进入全屏 landscape: 横屏
+    func enterFullView(landscape: Bool = false) {
+        guard let config = config else { return }
+        guard let keyWindow = UIWindow.getKeyWindow() else { return }
+        // 计算 视频视频在 window 上的 frame
+        let rectInWindow = self.convert(self.bounds, to: keyWindow)
+        // 从父视图移除, 删除约束
+        bg.removeFromSuperview()
+        bg.removeCons()
+        // 添加到 keywindow, 重新布局
+        keyWindow.addSubview(bg)
+        bg.consTop(rectInWindow.minY)
+        bg.consLeft(rectInWindow.minX)
+        bg.consWidth(rectInWindow.width)
+        bg.consHeight(rectInWindow.height)
+        keyWindow.layoutIfNeeded()
+        // 设置全屏时的显示样式
+        layerView.setFullScreenStyle(gravity: config.gravityInFullScreen)
+        // 隐藏状态栏
+        UIApplication.shared.keyWindow?.windowLevel = .statusBar
+        // 动画
+        UIView.animate(withDuration: 0.2) {
+            self.bg.removeCons()
+            if landscape { // 全屏模式为横屏时的最终布局
+                // 横屏旋转90度, 宽高约束对调
+                self.bg.transform = self.bg.transform.rotated(by: .pi / 2)
+                self.bg.consSuperCenterX()
+                self.bg.consSuperCenterY()
+                self.bg.consWidth(0, toItem: keyWindow, destAttri: .height)
+                self.bg.consHeight(0, toItem: keyWindow, destAttri: .width)
+            } else { // 全屏模式为竖屏时的最终布局
+                self.bg.consEdge(UIEdgeInsets.zero)
+            }
+            keyWindow.layoutIfNeeded()
+        } completion: { sss in
+            
+        }
+    }
+    
+    // 退出全屏 landscape: 横屏
+    func exitFullView(landscape: Bool = false) {
+        guard let config = config else { return }
+        guard let keyWindow = UIWindow.getKeyWindow() else { return }
+        // 计算 视频视频在 window 上的 frame
+        let rectInWindow = self.convert(self.bounds, to: keyWindow)
+        // 设置全屏时的显示样式
+        layerView.setFullScreenStyle(gravity: config.gravityInOriginScreen)
+        // 显示状态栏
+        UIApplication.shared.keyWindow?.windowLevel = .normal
+        // 动画
+        UIView.animate(withDuration: 0.2) {
+            if landscape { // 当前为横屏时, 逆90度转回来
+                self.bg.transform = self.bg.transform.rotated(by: -.pi / 2)
+            }
+            // 重新布局为全屏前的尺寸大小
+            self.bg.removeCons()
+            self.bg.consTop(rectInWindow.minY)
+            self.bg.consLeft(rectInWindow.minX)
+            self.bg.consWidth(rectInWindow.width)
+            self.bg.consHeight(rectInWindow.height)
+            keyWindow.layoutIfNeeded()
+        } completion: { sss in
+            // 动画结束后, 把视频层放回原父视图, 重新布局
+            self.bg.removeFromSuperview()
+            self.bg.removeCons()
+            self.addSubview(self.bg)
+            self.bg.consEdge(UIEdgeInsets.zero)
+        }
     }
 }
 
@@ -104,6 +195,14 @@ extension SaePlayer {
 }
 
 extension SaePlayer: PlayerlayerDelegate {
+    
+    public func saeLayer(layer: SaePlayerLayer, seekIsCompleted: Bool) {
+        controlView.setSeekStatus(isCompleted: seekIsCompleted)
+    }
+    
+    public func saeLayer(layer: SaePlayerLayer, item: AVPlayerItem, newRanges loadedTimeRanges: [NSValue]) {
+        controlView.setLoadedTimeRanges(range: loadedTimeRanges)
+    }
     
     public func saeLayer(layer: SaePlayerLayer, playerStateDidChange state: PlayStatus) {
         controlView.setPlayStatus(state)
@@ -124,9 +223,24 @@ extension SaePlayer: PlayerlayerDelegate {
         
     }
     
+    public func saeLayer(layer: SaePlayerLayer, videoSize: CGSize) {
+        config?.videoSize = videoSize
+    }
+    
 }
 
 extension SaePlayer: PlayControlDelegate {
+    
+    public func controlView(controlView: PlayControlProtocol, fullScreen: Bool) {
+        if fullScreen {
+            // 进入全屏
+            enterFullView(landscape: isFullScreenlandscape())
+        } else {
+            // 退出全屏
+            exitFullView(landscape: isFullScreenlandscape())
+        }
+    }
+    
     public func controlViewPanGesture(controlView: PlayControlProtocol, pan: UIPanGestureRecognizer) {
         switch pan.state {
         case .began:

@@ -71,8 +71,7 @@ public extension SaeSpace where Base: UITableView {
     
     // 检查更新 cell 的可播放/暂停状态
     func updateCellDisplayStatus() {
-        guard let cells = base.visibleCells as? [AutoPlayCell] else { return }
-        
+        let cells = base.visibleCells.map { $0 as? AutoPlayCell }.compactMap{ $0 }
         let formatHash = String(format: "%12d", base.hash)
         
         for (_, cell) in cells.enumerated() {

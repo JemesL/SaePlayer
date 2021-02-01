@@ -9,7 +9,6 @@
 import UIKit
 import AVKit
 import AVFoundation
-import SaeKit
 let Videos = [
     "https://qnimage.bamaying.com/2fe55de6ac84762ba75be4cb9dec17ae.mp4",
     "https://qnimage.bamaying.com/a5a2abb4d8b2c6ada976df5376ded6f8.mp4",
@@ -128,6 +127,7 @@ extension ViewController {
         pause.backgroundColor = .gray
         pause.frame.size = CGSize(width: 50, height: 50)
         pause.center = view.center
+        pause.isHidden = true
 //        pause.frame = CGRect(x: 100, y: 200, width: 50, height: 50)
         pause.addTarget(self, action: #selector(pausePlayer), for: UIControl.Event.touchUpInside)
         

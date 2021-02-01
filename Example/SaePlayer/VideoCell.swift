@@ -54,13 +54,13 @@ extension VideoCell {
     }
     
     func setupViews() {
-        let sim = SimpleControlView()
-        
-        sim.pauseBlock = { [weak self] in
-            guard let self = self else { return }
-            AutoPlayManager.shared.pause(self.index!, hash: self.tbHash!)
-        }
-        player = SaePlayer(custom: sim)
+//        let sim = SimpleControlView()
+//
+//        sim.pauseBlock = { [weak self] in
+//            guard let self = self else { return }
+//            AutoPlayManager.shared.pause(self.index!, hash: self.tbHash!)
+//        }
+        player = SaePlayer()
         contentView.addSubview(player)
         player.snp.makeConstraints { make in
             make.top.left.right.bottom.equalTo(0)

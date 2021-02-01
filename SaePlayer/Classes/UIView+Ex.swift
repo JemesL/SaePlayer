@@ -187,6 +187,23 @@ public extension UIView {
         consRight(-edge.right)
         consBottom(-edge.bottom)
     }
+    
+    func removeCons() {
+        // TODO 还是得检查下是子视图的约束 看看对不对
+        // 移除自身的约束
+        for cons in constraints {
+            if cons.firstItem?.isEqual(self) == true {
+                self.removeConstraint(cons)
+            }
+        }
+        // 移除父师父有关于自己的约束
+        guard let superCons = self.superview?.constraints else { return }
+        for cons in superCons {
+            if cons.firstItem?.isEqual(self) == true {
+                superview?.removeConstraint(cons)
+            }
+        }
+    }
 }
 
 class BaseView: UIView {
