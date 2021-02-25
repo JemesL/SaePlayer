@@ -68,7 +68,7 @@ open class SaePlayerLayer: UIView {
     // 流媒体播放状态
     fileprivate var status: PlayStatus = .none {
         didSet {
-            print("status: \(status)")
+//            print("status: \(status)")
 //            delegate?.setPlayStatus(status)
             delegate?.saeLayer(layer: self, playerStateDidChange: status)
         }
@@ -119,7 +119,20 @@ extension SaePlayerLayer {
         if url != self.url {
             needChangeItem = true
             self.url = url
+            // TODO: 需更新进度条
+//            updateControlProgress(urlStr: url)
         }
+    }
+    
+    func updateControlProgress(urlStr: String) {
+        guard let url = URL(string: urlStr) else { return }
+        let asset = VideoAssetManager.shared.getAsset(with: url)
+        let playerItem = AVPlayerItem(asset: asset)
+        debugPrint("URL: \(urlStr)")
+        debugPrint("curTime: \(TimeInterval(playerItem.currentTime().value))")
+        let totalTime = playerItem.duration
+        let curTime = playerItem.currentTime()
+        delegate?.saeLayer(layer: self, playTimeDidChange: TimeInterval(curTime.value), totalTime: TimeInterval(totalTime.value))
     }
     
     func initAndPlay() {
@@ -136,6 +149,7 @@ extension SaePlayerLayer {
 //        }
         
         let asset = VideoAssetManager.shared.getAsset(with: url)
+        
         asset.loadValuesAsynchronously(forKeys: ["tracks"]) { [weak self, weak asset] in
             DispatchQueue.main.asyncAfter(deadline: .now()) {
                 if let asset = asset, asset.isPlayable{

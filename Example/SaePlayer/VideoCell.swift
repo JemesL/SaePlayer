@@ -60,7 +60,10 @@ extension VideoCell {
 //            guard let self = self else { return }
 //            AutoPlayManager.shared.pause(self.index!, hash: self.tbHash!)
 //        }
-        player = SaePlayer()
+        var config = SaePlayer.Config()
+        config.gravityInOriginScreen = .resizeAspect
+        config.gravityInFullScreen = .resizeAspect
+        player = SaePlayer(custom: nil, config: config)
         contentView.addSubview(player)
         player.snp.makeConstraints { make in
             make.top.left.right.bottom.equalTo(0)

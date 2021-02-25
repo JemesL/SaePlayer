@@ -133,6 +133,11 @@ open class ControlView: BaseControlView {
     open var tapGesture: UITapGestureRecognizer!
     open var doubleTapGesture: UITapGestureRecognizer!
     
+    // 延时切换至SimpleControl
+    var delayTask: DispatchDelay.Task?
+    // 控制界面是否自动切换至 Simple 状态
+    open var isAutoSwitchToSimpleControl: Bool = true
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -145,6 +150,11 @@ open class ControlView: BaseControlView {
     
     deinit {
         print("ControlView")
+    }
+    
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        updateProgressFrame()
     }
 }
 
@@ -166,7 +176,15 @@ extension ControlView: PlayControlProtocol {
     }
     
     public func resetControl() {
+        // 控制面板重置为简版
         switchControlView(isSimple: true)
+        // 重置进度条
+//        currentTime = 0
+//        totalDuration = 0
+        progressTime.frame = CGRect(x: 0, y: self.frame.maxY - 2, width: 0, height: 2)
+        // 延时任务取消
+        controlEndDelayTask()
+        
     }
     
     public func setTotalTime(_ total: TimeInterval) {
@@ -241,13 +259,14 @@ extension ControlView: PlayControlProtocol {
     // 更新简版进度条
     func updateSimpleProgress() {
         guard totalDuration > 0 && isDragSliding == false else { return }
-        let value = Float(currentTime / totalDuration)
-
-        if let cons = progressWidthCons {
-            cons.isActive = false
-            progressTime.removeConstraint(cons)
-        }
-        progressWidthCons = progressTime.getConsWidth(0, toItem: nil, destAttri: .width, dividedBy: CGFloat(1 / value), relatedBy: .equal)
+        updateProgressFrame()
+//        let value = Float(currentTime / totalDuration)
+//
+//        if let cons = progressWidthCons {
+//            cons.isActive = false
+//            progressTime.removeConstraint(cons)
+//        }
+//        progressWidthCons = progressTime.getConsWidth(0, toItem: nil, destAttri: .width, dividedBy: CGFloat(1 / value), relatedBy: .equal)
     }
     
     func updateTime() {
@@ -258,6 +277,9 @@ extension ControlView: PlayControlProtocol {
     
     // 切换完整版和简版控制组件
     func switchControlView(isSimple: Bool) {
+        if isSimple == false { // 切换至完整版时 激活延时任务
+            resetControlDelayTask()
+        }
         self.isSimple = isSimple
         fullView.isHidden = isSimple
         simpleView.isHidden = !isSimple
@@ -312,15 +334,8 @@ extension ControlView {
     }
     
     @objc func switchPlayerStatus() {
-//        playBtn.isSelected = !playBtn.isSelected
-//        bigPlayBtn.isSelected = playBtn.isSelected
-//        if playBtn.isSelected {
-//            delegate?.controlViewPlay(controlView: self)
-//        } else {
-//            delegate?.controlViewPause(controlView: self)
-//        }
-//        playBtn.isSelected ? delegate?.play() : delegate?.pause()
         setPlayerStatus(isPlaying: !playBtn.isSelected)
+        resetControlDelayTask()
     }
     
     func setPlayerStatus(isPlaying: Bool) {
@@ -335,6 +350,7 @@ extension ControlView {
     
     @objc func sliderTouchBegan(_ sender: UISlider) {
         isDragSliding = true
+        controlEndDelayTask()
     }
 
     @objc func sliderValueChanged(_ sender: UISlider) {
@@ -342,11 +358,32 @@ extension ControlView {
     }
 
     @objc func sliderTouchEnded(_ sender: UISlider) {
-        
+        resetControlDelayTask()
         let currentTime = Double(sender.value) * totalDuration
         waitingSeekActionEnd = true
         delegate?.controlViewSeek(controlView: self, toTime: currentTime)
         isDragSliding = false
+    }
+}
+
+// MARK: - 控制器自动
+extension ControlView {
+    // 重置控制界面延时任务
+    func resetControlDelayTask() {
+        guard isAutoSwitchToSimpleControl else { return }
+        controlEndDelayTask()
+        delayTask = DispatchDelay.delay(3) { [weak self] in
+            self?.switchControlView(isSimple: true)
+            self?.controlEndDelayTask()
+        }
+    }
+    
+    // 终止界面的延时任务
+    func controlEndDelayTask() {
+        if let task = delayTask {
+            DispatchDelay.cancel(task)
+            delayTask = nil
+        }
     }
 }
 
@@ -425,6 +462,7 @@ extension ControlView {
     }
     
     @objc func switchScreenStatus() {
+        resetControlDelayTask()
         self.fullScreenStatus.toggle()
         self.delegate?.controlView(controlView: self, fullScreen: self.fullScreenStatus)
     }
@@ -449,10 +487,25 @@ extension ControlView {
         fullBtn.consRight(-10)
         fullBtn.consBottom(-10)
         
-        progressTime.consLeft(0)
-        progressTime.consBottom(0)
-        progressTime.consHeight(2)
-        progressWidthCons = progressTime.getConsWidth(0, toItem: nil, destAttri: .width, dividedBy: 100, relatedBy: .equal)
+//        progressTime.consLeft(0)
+//        progressTime.consBottom(0)
+//        progressTime.consHeight(2)
+//        progressWidthCons = progressTime.getConsWidth(0, toItem: nil, destAttri: .width, dividedBy: 100, relatedBy: .equal)
+        updateProgressFrame()
+    }
+    
+    func updateProgressFrame() {
+        var width: CGFloat = 0
+        if currentTime != 0 && totalDuration != 0 {
+            let rate = CGFloat(currentTime / totalDuration)
+            width = self.frame.width * rate
+        }
+        if #available(iOS 11.0, *) {
+            progressTime.frame = CGRect(x: self.safeAreaInsets.left, y: self.frame.maxY - 2, width: width, height: 2)
+        } else {
+            // Fallback on earlier versions
+            progressTime.frame = CGRect(x: 0, y: self.frame.maxY - 2, width: width, height: 2)
+        }
     }
 }
 

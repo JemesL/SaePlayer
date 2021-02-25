@@ -81,6 +81,7 @@
 		8A50CF3AAB5BD9BF949142DEB8E5050A /* ImageModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 026DC2FF2D6BABFADD364545F1D15190 /* ImageModifier.swift */; };
 		8B8BE709B46663F60DB6A661A3B2A28A /* ConstraintMakerPriortizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6EE3695313B4BC68EDF4D2ACA67B1663 /* ConstraintMakerPriortizable.swift */; };
 		8C0E668E24B7221C00D50143 /* UIWindow+Ex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0E668D24B7221C00D50143 /* UIWindow+Ex.swift */; };
+		8CA1991025E7563F0089475F /* DispatchDelay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CA1990F25E7563F0089475F /* DispatchDelay.swift */; };
 		8EB401DC59ED357AFE37BAF90CD90B3A /* GIFAnimatedImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2442400036C7E85534FE33268DFD5C2 /* GIFAnimatedImage.swift */; };
 		90AAB5BE2C1C3B9DD8E529AE520A3A04 /* KVOEnhance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37E5FB1D762C48727742E861B43D44C3 /* KVOEnhance.swift */; };
 		9432185152350A4A90F6DD19C33AC057 /* Debugging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 12DC7791FBFE0C8DAEA222E4C48FCC71 /* Debugging.swift */; };
@@ -286,6 +287,7 @@
 		89F866EFA875B6BC7872DAB02C787501 /* Kingfisher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Kingfisher.h; path = Sources/Kingfisher.h; sourceTree = "<group>"; };
 		8B4226B46A9A7DBC2288DB3CA1BB7549 /* Kingfisher-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Kingfisher-prefix.pch"; sourceTree = "<group>"; };
 		8C0E668D24B7221C00D50143 /* UIWindow+Ex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+Ex.swift"; sourceTree = "<group>"; };
+		8CA1990F25E7563F0089475F /* DispatchDelay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DispatchDelay.swift; sourceTree = "<group>"; };
 		8DD5F4F6D9FC3765039F14049F6B890A /* Pods-SaePlayer_Tests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-SaePlayer_Tests-Info.plist"; sourceTree = "<group>"; };
 		8E568F826CE4528D0606379CE61DF7C8 /* ConstraintMakerEditable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMakerEditable.swift; path = Source/ConstraintMakerEditable.swift; sourceTree = "<group>"; };
 		8E94675E8DB7015626485B24F6A58A92 /* SnapKit-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SnapKit-dummy.m"; sourceTree = "<group>"; };
@@ -737,6 +739,7 @@
 				53A390F3577AEBC69BB8A292CB3B88F4 /* AutoPlayManager.swift */,
 				1F0D77471B73A6B0899D5F0E21EFF5D3 /* BaseControlView.swift */,
 				FE4A12F723E4366F39F25755238F35AB /* ControlView.swift */,
+				8CA1990F25E7563F0089475F /* DispatchDelay.swift */,
 				1E482DA971849C73D55FA3E36EEF87DA /* Dictionary+Ex.swift */,
 				D9F6520AB34EEBE8C4B7D80932362F85 /* LoadingView.swift */,
 				69435DAF599AF345816E10F017F9E2A8 /* SaePlayer.swift */,
@@ -1066,6 +1069,7 @@
 				61FCFF4632B2B4F383F6DA581E943B1D /* LoadingView.swift in Sources */,
 				6F14AF3DED85A1606951360EF83F2708 /* SaePlayer-dummy.m in Sources */,
 				F1A4D6AE059F94C55F30B42ACA0552E3 /* SaePlayer.swift in Sources */,
+				8CA1991025E7563F0089475F /* DispatchDelay.swift in Sources */,
 				99ECF700CC57FA7DDED5080F7EABBB6C /* SaePlayerLayer.swift in Sources */,
 				9FBC68D893202D1FF3AFAD1D97F2D128 /* SaeSlide.swift in Sources */,
 				D9C56C20A5455A4F127FA6BB701240B7 /* SaeTestView.swift in Sources */,

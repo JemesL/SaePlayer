@@ -25,11 +25,15 @@ open class SaePlayer: UIView {
     // 相关一些配置
     public struct Config {
         // 视频全屏时 内容显示模式
-        var gravityInFullScreen: AVLayerVideoGravity = .resizeAspectFill
+        public var gravityInFullScreen: AVLayerVideoGravity = .resizeAspectFill
         // 视频在原视图时 内容显示模式
-        var gravityInOriginScreen: AVLayerVideoGravity = .resizeAspectFill
+        public var gravityInOriginScreen: AVLayerVideoGravity = .resizeAspectFill
         // 视频尺寸
-        var videoSize: CGSize? = nil
+        public var videoSize: CGSize? = nil
+        
+        public init() {
+            
+        }
     }
     
     fileprivate let edge = UIEdgeInsets(top: 15, left: LEFT_RIGHT_MARGIN, bottom: 15, right: LEFT_RIGHT_MARGIN)
@@ -93,6 +97,7 @@ extension SaePlayer {
         bg = UIView()
         bg.backgroundColor = .clear
         layerView = SaePlayerLayer()
+        layerView.setFullScreenStyle(gravity: config?.gravityInOriginScreen ?? .resizeAspect)
         controlView.delegate = self
         layerView.delegate = self
         
